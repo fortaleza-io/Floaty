@@ -10,8 +10,6 @@ import UIKit
 @objc public enum FloatyItemLabelPositionType: Int {
   case left
   case right
-  case top
-  case bottom
 }
 
 /**
@@ -68,7 +66,7 @@ open class FloatyItem: UIView {
   @objc open var handler: ((FloatyItem) -> Void)? = nil
   
   @objc open var imageOffset: CGPoint = CGPoint.zero
-  @objc open var imageSize: CGSize = CGSize(width: 25, height: 25) {
+  @objc open var imageSize: CGSize = CGSize(width: 42, height: 42) {
     didSet {
       _iconImageView?.frame = CGRect(x: 0, y: 0, width: imageSize.width, height: imageSize.height)
       _iconImageView?.center = CGPoint(x: size/2, y: size/2) + imageOffset
@@ -98,16 +96,8 @@ open class FloatyItem: UIView {
     didSet {
       if(titleLabelPosition == .left) {
         titleLabel.frame.origin.x = -titleLabel.frame.size.width - 10
-      } else if (titleLabelPosition == .right) {
+      } else { //titleLabel will be on right
         titleLabel.frame.origin.x = iconImageView.frame.origin.x + iconImageView.frame.size.width + 20
-      } else if (titleLabelPosition == .top) {
-        titleLabel.frame.origin.x = iconImageView.frame.origin.x
-        titleLabel.frame.origin.y = iconImageView.frame.origin.y - titleLabel.frame.size.height - 10
-      } else if (titleLabelPosition == .bottom) {
-        titleLabel.frame.origin.x = iconImageView.frame.origin.x
-        titleLabel.frame.origin.y = iconImageView.frame.origin.y + iconImageView.frame.size.height + 10
-      } else { // take default as left
-        titleLabel.frame.origin.x = -titleLabel.frame.size.width - 10
       }
     }
   }
@@ -129,41 +119,19 @@ open class FloatyItem: UIView {
   }
   
   /**
-   Title background view
-   */
-  @objc open var titleView: UIView = UIView()
-  @objc open var titleViewColor: UIColor = .clear {
-    didSet {
-      titleView.backgroundColor = titleViewColor
-    }
-  }
-  
-  /**
    Item's title.
    */
   @objc open var title: String? = nil {
     didSet {
-      let titleViewLeftPadding: CGFloat = titleViewColor == .clear ? 0 : 14
-      let titleViewTopPadding: CGFloat = 4
-      
       titleLabel.text = title
       titleLabel.sizeToFit()
       if(titleLabelPosition == .left) {
-        titleLabel.frame.origin.x = -titleLabel.frame.size.width - 10 - titleViewLeftPadding * 2
+        titleLabel.frame.origin.x = -titleLabel.frame.size.width - 10
       } else { //titleLabel will be on right
-        titleLabel.frame.origin.x = iconImageView.frame.origin.x + iconImageView.frame.size.width + 20 + titleViewLeftPadding * 2
+        titleLabel.frame.origin.x = iconImageView.frame.origin.x + iconImageView.frame.size.width + 20
       }
       
       titleLabel.frame.origin.y = self.size/2-titleLabel.frame.size.height/2
-      
-      titleView = UIView(frame: CGRect(x: 0,
-                                       y: 0,
-                                       width: titleLabel.frame.width + 10 + titleViewLeftPadding * 2,
-                                       height: titleLabel.frame.height + 10 + titleViewTopPadding * 2))
-      titleView.layer.cornerRadius = titleView.frame.height / 2
-      titleView.backgroundColor = titleViewColor
-      addSubview(titleView)
-      titleView.center = titleLabel.center
       
       if FloatyManager.defaultInstance().rtlMode {
         titleLabel.transform = CGAffineTransform(scaleX: -1.0, y: 1.0);
@@ -318,8 +286,6 @@ open class FloatyItem: UIView {
   }
 }
 
-private extension CGPoint {
-    static func + (left: CGPoint, right: CGPoint) -> CGPoint {
-        return CGPoint(x: left.x + right.x, y: left.y + right.y)
-    }
+func + (left: CGPoint, right: CGPoint) -> CGPoint {
+  return CGPoint(x: left.x + right.x, y: left.y + right.y)
 }

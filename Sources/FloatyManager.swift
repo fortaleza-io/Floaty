@@ -8,7 +8,7 @@
 import UIKit
 
 /**
- Floaty dependent on UIWindow.
+ KCFloatingActionButton dependent on UIWindow.
  */
 open class FloatyManager: NSObject {
   private static var __once: () = {
