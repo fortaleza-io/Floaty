@@ -1,166 +1,44 @@
-# Floaty
-![Swift 5.0](https://img.shields.io/badge/Swift-5.0-orange.svg)
-[![Version](https://img.shields.io/cocoapods/v/Floaty.svg?style=flat)](https://cocoapods.org/pods/floaty)
-[![License](https://img.shields.io/cocoapods/l/Floaty.svg?style=flat)](https://cocoapods.org/pods/floaty)
-[![Platform](https://img.shields.io/cocoapods/p/Floaty.svg?style=flat)](https://cocoapods.org/pods/floaty)
-[![Build Status](https://travis-ci.org/kciter/Floaty.svg?branch=master)](https://travis-ci.org/kciter/Floaty)
+# Floaty Fork for LineGuide
 
-Floaty is simple floating action button for iOS. (formerly KCFloatingActionButton)
-> Why change the name?
-> 1. Follow the swift naming convention.
-> 2. `KCFloatingActionButton` is too long.
+This repository is the LineGuide-maintained fork of `kciter/Floaty`.
 
-## Preview
-<img src="https://github.com/kciter/Floaty/raw/master/Images/preview.gif" width='187' alt="Preview gif">
+## Why This Fork Exists
 
-## Requirements
-* iOS 10.0+
-* Swift 5.0
+LineGuide uses floating action menus that expand horizontally from the right edge of the screen toward the left. The upstream library is centered on vertical expansion, so we introduced a small fork to support the current product behavior without rewriting every menu immediately.
 
-## Installation
-### CocoaPods
-```ruby
-use_frameworks!
-pod 'Floaty', '~> 4.2.0'
-```
-### Carthage
-```ruby
-github "kciter/Floaty"
-```
+This fork is intended to be an interim solution while the app moves toward a SwiftUI-based replacement for these floating controls.
 
-### Swift Package Manager
-Once you have your Swift package set up, adding Floaty as a dependency is as easy as adding it to the dependencies value of your `Package.swift`.
-```swift
-dependencies: [
-    .package(url: "https://github.com/kciter/Floaty.git", from: "4.2.1")
-]
-```
+## What We Customized
 
-### Manually
-To install manually the Floaty in an app, just drag the `Floaty/*.swift` file into your project.
+The fork adds and preserves behavior needed for LineGuide's horizontal left-side menu layout:
 
-## Usage
-### Storyboard support
-<img src="https://github.com/kciter/Floaty/raw/master/Images/storyboard_support1.png" height='300' alt="Storyboard support1">
-<img src="https://github.com/kciter/Floaty/raw/master/Images/storyboard_support2.png" height='300' alt="Storyboard support2">
+- Support for directional expansion beyond the default vertical-only pattern.
+- Left/right item placement and animation handling in the core `Floaty` implementation.
+- Compatibility with the app's usage pattern where menus are configured with:
+  - `verticalDirection = .left`
+  - `openAnimationType = .none`
 
-### Dependent on the UIWindow.
-```swift
-Floaty.global.button.addItem(title: "Hello, World!")
-Floaty.global.show()
-```
-<img src="https://github.com/kciter/Floaty/raw/master/Images/dependent_on_uiwindow.gif" width='187' alt="Dependent on the UIWindow">
+In practice, this allows the floating menu button to stay anchored near the right edge while menu items open horizontally toward the left, which fits the app's map workflows and avoids obscuring the main interaction area.
 
-### Dependent on the UIViewController.
-```swift
-let floaty = Floaty()
-floaty.addItem(title: "Hello, World!")
-self.view.addSubview(floaty)
-```
-<img src="https://github.com/kciter/Floaty/raw/master/Images/dependent_on_uiviewcontroller.gif" width='187' alt="Dependent on the UIViewController">
+## Scope
 
-### Use icon
-```swift
-let floaty = Floaty()
-floaty.addItem("Hello, World!", icon: UIImage(named: "icon")!)
-self.view.addSubview(floaty)
-```
-<img src="https://github.com/kciter/Floaty/raw/master/Images/icon.png" width='187' alt="Use icon">
+This fork should stay intentionally narrow:
 
-### Use handler
-#### Swift
-```swift
-let floaty = Floaty()
-floaty.addItem("I got a handler", icon: UIImage(named: "icon")!, handler: { item in
-    let alert = UIAlertController(title: "Hey", message: "I'm hungry...", preferredStyle: .alert)
-    alert.addAction(UIAlertAction(title: "Me too", style: .default, handler: nil))
-    self.present(alert, animated: true, completion: nil)
-    floaty.close()
-})
-self.view.addSubview(floaty)
-```
-<img src="https://github.com/kciter/Floaty/raw/master/Images/handler.gif" width='187' alt="Use handler">
+- Keep changes limited to behavior required by LineGuide.
+- Avoid broad refactors unrelated to the menu-direction customization.
+- Preserve upstream compatibility where practical so future upstream sync remains manageable.
 
-### Use custom item
-```swift
-let item = FloatyItem()
-item.buttonColor = UIColor.blueColor()
-item.title = "Custom item"
-Floaty.global.button.addItem(item: item)
-```
-<img src="https://github.com/kciter/Floaty/raw/master/Images/custom_item.png" width='187' alt="Use custom item">
+## Upstream Handling
 
+If we need fixes from `kciter/Floaty` in the future:
 
-### RTL Support
-You can use the `rtlMode` property to mirror the Floaty Button for rtl languages.
-```swift
-Floaty.global.rtlMode = true
-```
-<img src="https://github.com/divgunsingh/Floaty/raw/master/Images/rtl_enabled.png" width='187' alt="Rtl Enabled"> <img src="https://github.com/divgunsingh/Floaty/raw/master/Images/rtl_disabled.png" width='187' alt="Rtl Disabled">
+1. Pull changes into this fork first.
+2. Reconcile them here.
+3. Re-test the LineGuide horizontal menu behavior.
+4. Update the app to the new fork revision only after verification.
 
+The app should continue to depend on this fork as the single source of truth, not on a personal fork or the original upstream repository.
 
+## Long-Term Plan
 
-### Sticky
-You can use the `sticky` property.
-```swift
-floaty.sticky = true // sticking to parent UIScrollView(also UITableView, UICollectionView)
-scrollView.addSubview(floaty)
-```
-
-### Friendly Tap
-You can use the `friendlyTap` property.
-```swifty
-fab.friendlyTap = true
-scrollView.addSubview(fab)
-```
-With the default location of the frame, the button is now tappable until the right and rightbottom of the screen. This prevents tapping behind it by accident.
-
-### Animation type
-<table>
-<tr>
-<th>Pop</th><th>Fade</th><th>Slide Left</th>
-</tr>
-<tr>
-<td><img src="https://github.com/kciter/Floaty/raw/master/Images/preview.gif" width='187' alt="Pop animation gif"></td>
-<td><img src="https://github.com/kciter/Floaty/raw/master/Images/fade_ani.gif" width='187' alt="Fade animation gif"></td>
-<td><img src="https://github.com/kciter/Floaty/raw/master/Images/slideleft_ani.gif" width='187' alt="Slide left animation gif"></td>
-</tr>
-<tr>
-<th>Slide Up</th><th>None</th>
-</tr>
-<tr>
-<td><img src="https://github.com/kciter/Floaty/raw/master/Images/slideup_ani.gif" width='187' alt="Slide up animation gif"></td>
-<td><img src="https://github.com/kciter/Floaty/raw/master/Images/none_ani.gif" width='187' alt="None animation gif"></td>
-</tr>
-</table>
-
-## ToDo
-* [ ] Labels to come at the right hand side of the FAB Item menu.
-
-## Donate
-If you like this open source, you can sponsor it. :smile:
-
-[Paypal me](https://paypal.me/kciter)
-
-## License
-The MIT License (MIT)
-
-Copyright (c) 2015 Lee Sun-Hyoup
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+This fork is temporary. The long-term direction is to replace these UIKit/Storyboard-driven floating menus with a SwiftUI-based implementation owned directly by the LineGuide app.
